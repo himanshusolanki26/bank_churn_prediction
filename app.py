@@ -9,9 +9,16 @@ import plotly.graph_objects as go
 # ---------- Streamlit Config ----------
 st.set_page_config(page_title="Bank Churn Predictor", page_icon="💠", layout="wide")
 
-# ---------- Premium Gradient + Glassmorphism CSS ----------
+# ---------- Compact Layout CSS ----------
 st.markdown("""
 <style>
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 95%;
+}
 .stApp {
     background: linear-gradient(135deg, #eef2ff 0%, #f0fdfa 100%);
     font-family: 'Poppins', sans-serif;
@@ -19,66 +26,57 @@ st.markdown("""
 }
 .title {
     text-align: center;
-    font-size: 42px;
-    font-weight: 800;
+    font-size: 32px;
+    font-weight: 700;
     color: #0e7490;
-    text-shadow: 0px 2px 10px rgba(14, 116, 144, 0.15);
+    text-shadow: 0px 1px 5px rgba(14, 116, 144, 0.15);
     margin-bottom: 0px;
 }
 .subtitle {
     text-align: center;
-    font-size: 18px;
+    font-size: 14px;
     color: #334155;
-    margin-bottom: 22px;
+    margin-bottom: 15px;
 }
 .card {
     background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(14, 116, 144, 0.08);
-    padding: 22px;
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(14, 116, 144, 0.08);
+    padding: 12px;
 }
 .result-card {
     background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border-radius: 22px;
-    padding: 20px;
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    padding: 12px;
     text-align: center;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.6s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 .metric {
-    font-size: 40px;
-    font-weight: 800;
-    letter-spacing: 1px;
+    font-size: 28px;
+    font-weight: 700;
 }
-.safe { color: #16a34a; text-shadow: 0 1px 8px rgba(22, 163, 74, 0.3); }
-.danger { color: #dc2626; text-shadow: 0 1px 8px rgba(220, 38, 38, 0.3); }
+.safe { color: #16a34a; }
+.danger { color: #dc2626; }
 .stButton button {
     background: linear-gradient(90deg, #0ea5e9, #06b6d4);
     color: white;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 18px;
-    padding: 10px;
-    transition: all 0.3s ease-in-out;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 6px;
+    transition: 0.2s;
     border: none;
-    box-shadow: 0px 4px 12px rgba(6,182,212,0.25);
+    box-shadow: 0px 2px 8px rgba(6,182,212,0.25);
 }
-.stButton button:hover {
-    transform: scale(1.05);
-    background: linear-gradient(90deg, #06b6d4, #0ea5e9);
-}
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(10px);}
-    to {opacity: 1; transform: translateY(0);}
-}
+.stButton button:hover { transform: scale(1.03); }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------- Title ----------
 st.markdown('<div class="title">💠 Bank Churn Predictor</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Smart AI tool to forecast customer churn risk instantly</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">AI tool to forecast customer churn risk instantly</div>', unsafe_allow_html=True)
 
 # ---------- Load Model & Scaler ----------
 @st.cache_resource
@@ -105,7 +103,7 @@ def predict_single(data_dict):
     return float(prob)
 
 # ---------- Layout ----------
-left, right = st.columns([1, 1])
+left, right = st.columns([1.2, 1])
 
 with left:
     with st.form("churn_form"):
@@ -122,12 +120,11 @@ with left:
         salary = c6.number_input("Estimated Salary", 0.0, 1e7, 50000.0, step=100.0)
 
         c7,c8,c9 = st.columns(3)
-        has_card = int(c7.checkbox("Has Credit Card", True))
-        is_active = int(c8.checkbox("Active Member", True))
-        gender = c9.radio("Gender", ["Male","Female"])
+        has_card = int(c7.checkbox("Has Card", True))
+        is_active = int(c8.checkbox("Active", True))
+        gender = c9.radio("Gender", ["Male","Female"], horizontal=True)
         geo = st.selectbox("🌍 Geography", ["France","Germany","Spain"])
-
-        threshold = st.slider("Prediction Threshold", 0.1, 0.9, 0.5, 0.05)
+        threshold = st.slider("Threshold", 0.1, 0.9, 0.5, 0.05)
 
         submit = st.form_submit_button("🔮 Predict", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -152,12 +149,14 @@ with right:
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
         st.markdown(f"<div class='metric {'danger' if churn else 'safe'}'>{prob:.2%}</div>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size:20px;'>{'🚨 High Risk of Churn' if churn else '✅ Customer Likely to Stay'}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size:16px;'>{'🚨 High Risk' if churn else '✅ Likely Safe'}</p>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
+        # --- Bigger & Clear Gauge Chart with % ---
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=prob * 100,
+            number={'suffix': "%", 'font': {'size': 38, 'color': "#0f172a"}},  # bigger & bold %
             title={'text': "Churn Probability", 'font': {'size': 20}},
             gauge={
                 'axis': {'range': [0, 100]},
@@ -167,10 +166,17 @@ with right:
                     {'range': [50, 100], 'color': "#fee2e2"}
                 ],
                 'threshold': {
-                    'line': {'color': "black", 'width': 4},
-                    'thickness': 0.8,
+                    'line': {'color': "black", 'width': 3},
+                    'thickness': 0.7,
                     'value': threshold * 100
                 }
             }
         ))
+        fig.update_layout(
+            height=360,
+            margin=dict(l=10, r=10, t=40, b=10),
+            paper_bgcolor="rgba(0,0,0,0)",  # transparent
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
         st.plotly_chart(fig, use_container_width=True)
+
