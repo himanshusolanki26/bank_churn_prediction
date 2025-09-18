@@ -4,3 +4,4 @@ numpy
 tensorflow
 joblib
 plotly
+scikit-learn
